@@ -1,3 +1,5 @@
+# https://adventofcode.com/2022/day/3
+
 require_relative 'part1'
 
 raw_input = InputParser.parse

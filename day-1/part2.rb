@@ -1,3 +1,5 @@
+# https://adventofcode.com/2022/day/1
+
 require_relative 'part1'
 
 food_per_elf = InputParser.food_per_elf

@@ -1,3 +1,5 @@
+# https://adventofcode.com/2022/day/2
+
 PLAY_TRANSLATIONS = {
   'X' => 'rock',
   'A' => 'rock',

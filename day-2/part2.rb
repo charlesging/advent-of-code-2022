@@ -1,3 +1,5 @@
+# https://adventofcode.com/2022/day/2
+
 require_relative 'part1'
 
 RESULT_MAPPINGS = {

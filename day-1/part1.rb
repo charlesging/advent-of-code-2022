@@ -1,3 +1,4 @@
+# https://adventofcode.com/2022/day/1
 class InputParser
   def self.food_per_elf
     input_data = File.readlines('./src/input.txt') 
