@@ -59,7 +59,7 @@ class InputParser
   end
 end
 
-class Crane
+class Crane9000
   attr_reader :instructions
   attr_accessor :stacks_hash
 
@@ -85,8 +85,7 @@ class Crane
   end
 end
 
-
 parser = InputParser.new
-crane = Crane.new(parser.stacks, parser.instructions)
+crane = Crane9000.new(parser.stacks, parser.instructions)
 crane.make_moves
 crane.top_crates # FCVRLMVQP
