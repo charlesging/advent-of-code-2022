@@ -14,7 +14,7 @@ class InputParser
     raw = raw_input.slice(stack_numbers_line_index + 2..-1)
     raw.map do |line|
       # amount, from, to
-      line.scan(/\d/).map(&:to_i) # parsing ints should live in consuming class
+      line.scan(/\d+/).map(&:to_i) # parsing ints should live in consuming class
     end
   end
 
@@ -59,15 +59,9 @@ class InputParser
   end
 end
 
-parser = InputParser.new
-stacks_hash = parser.stacks
-p parser.stack_numbers_line_index
-instructions = parser.instructions
-
-# p instructions[0...10]
-
 class Crane
-  attr_reader :stacks_hash, :instructions
+  attr_reader :instructions
+  attr_accessor :stacks_hash
 
   def initialize(stacks_hash, instructions)
     @stacks_hash = stacks_hash
@@ -75,20 +69,12 @@ class Crane
   end
 
   def make_moves
-    # instructions: amount, from, to
-    # from / to refer to key in stacks_hash
-
-    # iterate through instructions.
-    # for each instruction, 
-      # amount times: 
-        # pop a value from the value arr referenced by the from key
-        # append this value to the value arr referenced by the to key
-    instructions.each do |times, from, to|
-      p stacks_hash
-      times.times do
+    instructions.each do |moves, from, to|
+      moves.times do
         val = stacks_hash[from].pop
-        stacks_hash[to] << val if val
-        # stacks_hash
+        break unless val
+
+        stacks_hash[to] << val
       end
     end
     stacks_hash
@@ -99,11 +85,8 @@ class Crane
   end
 end
 
-crane = Crane.new(stacks_hash, instructions)
-# p crane.top_crates
-# p stacks_hash
+
+parser = InputParser.new
+crane = Crane.new(parser.stacks, parser.instructions)
 crane.make_moves
-p crane.top_crates
-
-
-# TMJPHBF wrong
+crane.top_crates # FCVRLMVQP
