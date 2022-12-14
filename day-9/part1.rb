@@ -1,7 +1,5 @@
 # https://adventofcode.com/2022/day/9
 
-require 'pry'
-
 def create_grid(input)
   max_rows_idx = 0
   max_cols_idx = 0
@@ -12,24 +10,25 @@ def create_grid(input)
     direction, spaces = line.split(' ')
     spaces = spaces.to_i
 
-    if direction == 'R'
+    case direction
+    when 'R'
       current_col_idx += spaces
       if current_col_idx > max_cols_idx
         max_cols_idx = current_col_idx
       end
-    elsif direction == 'L'
+    when 'L'
       current_col_idx -= spaces
       if current_col_idx.negative?
         max_cols_idx += current_col_idx.abs
         current_col_idx = 0
       end
-    elsif direction == 'U'
+    when 'U'
       current_row_idx -= spaces
       if current_row_idx.negative?
         max_rows_idx += current_row_idx.abs
         current_row_idx = 0
       end
-    else # 'D'
+    when 'D'
       current_row_idx += spaces
       if current_row_idx > max_rows_idx
         max_rows_idx = current_row_idx
@@ -48,9 +47,17 @@ class Location
     @col = col
   end
 
-  def move(new_row, new_col)
-    self.row = new_row
-    self.col = new_col
+  def move(direction)
+    case direction
+    when 'U'
+      self.row -= 1
+    when 'D'
+      self.row += 1
+    when 'R'
+      self.col += 1
+    when 'L'
+      self.col -= 1
+    end
   end
 
   def adjacent?(other)
@@ -98,34 +105,8 @@ class RopeBridge
   def process_moves
     moves.each do |direction, times|
       times.times do
-        case direction
-        when 'U'
-          head.move(head.row - 1, head.col)
-        when 'D'
-          head.move(head.row + 1, head.col)
-        when 'R'
-          head.move(head.row, head.col + 1)
-        when 'L'
-          head.move(head.row, head.col - 1)
-        end
-
-        if !head.adjacent?(tail)
-          if head.same_row?(tail)
-            adjust_tail_col
-          elsif head.same_col?(tail)
-            adjust_tail_row
-          else
-            if ['U', 'D'].include? direction
-              tail.col = head.col
-              adjust_tail_row
-            else # L / R
-              tail.row = head.row
-              adjust_tail_col
-            end
-          end
-
-          spaces_visited << [tail.row, tail.col]
-        end
+        head.move(direction)
+        !head.adjacent?(tail) && handle_non_adjacent(direction)
       end
     end
   end
@@ -136,14 +117,36 @@ class RopeBridge
 
   private
 
+  def handle_non_adjacent(direction)
+    if head.same_row?(tail)
+      adjust_tail_col
+    elsif head.same_col?(tail)
+      adjust_tail_row
+    else
+      handle_move_from_previous_diagonal(direction)
+    end
+
+    spaces_visited << [tail.row, tail.col]
+  end
+
+  def handle_move_from_previous_diagonal(direction)
+    if %w[U D].include? direction
+      tail.col = head.col
+      adjust_tail_row
+    else # L / R
+      tail.row = head.row
+      adjust_tail_col
+    end
+  end
+
   def adjust_tail_col
-    tail.move(tail.row, tail.col -= 1) if head.col < tail.col
-    tail.move(tail.row, tail.col += 1) if head.col > tail.col
+    tail.move('L') if head.col < tail.col
+    tail.move('R') if head.col > tail.col
   end
 
   def adjust_tail_row
-    tail.move(tail.row -= 1, tail.col) if head.row < tail.row
-    tail.move(tail.row += 1, tail.col) if head.row > tail.row
+    tail.move('U') if head.row < tail.row
+    tail.move('D') if head.row > tail.row
   end
 
   def moves
@@ -157,6 +160,5 @@ end
 empty_grid = create_grid('./input.txt')
 bridge = RopeBridge.new(empty_grid, './input.txt')
 bridge.process_moves
-bridge.spaces_visited.uniq.count
-bridge.num_uniq_spaces_visited
+bridge.num_uniq_spaces_visited # 6098
 
